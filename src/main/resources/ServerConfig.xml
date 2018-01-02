@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+       <bean id="propertyConfigurer"
+             class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+              <property name="locations">
+                     <list>
+                            <value>classpath*:app.properties</value>
+                     </list>
+              </property>
+       </bean>
+
+       <bean id="frontEnd" class="com.zenzet.FrontEnd">
+              <property name="port" value="${server.port}"/>
+       </bean>
+
+       <!-- jedis pool配置 -->
+       <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+              <property name="maxTotal" value="-1" />
+              <property name="maxIdle" value="-1" />
+              <property name="maxWaitMillis" value="10000" />
+              <property name="testOnBorrow" value="true" />
+       </bean>
+
+       <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+              <constructor-arg index="0" ref="jedisPoolConfig" />
+              <constructor-arg value="${redis.host}" />
+              <constructor-arg value="${redis.port}" />
+              <constructor-arg value="${redis.timeout}" />
+              <constructor-arg value="${redis.password}" />
+              <constructor-arg value="${redis.database}" />
+       </bean>
+
+       <bean id="jedisUtil" class="com.zenzet.JedisUtil">
+              <property name="jedisMasterPool" ref="jedisPool" />
+       </bean>
+
+
+      <!-- <bean id="templateRefresh" class="com.zenzet.TemplateRefresh" init-method="start" destroy-method="destroy">
+              <property name="cacheMaxDelay" value="${template.refresh.delay}" />
+       </bean> -->
+
+</beans>
